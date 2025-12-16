@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aetherwell Battle Quiz</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        
+        <div id="race-selection" class="screen active">
+            <h1 class="screen-title">SEVEN KINGDOMS OF THE ETERNAL TRIAL</h1>
+            <img id="game-logo" src="images/aetherwell_logo.png.jpg" alt="Aetherwell Game Logo" class="game-logo-image">
+            <p class="description motto">"Answer with wisdom. Fight with honor. Survive the Trial."</p>
+            
+            <div class="rule-book-box">
+                <h2 class="rule-book-title">RULE BOOK</h2>
+                
+                <div class="rule-section">
+                    <h3 class="section-heading">🌍 THEME: SEVEN KINGDOMS OF THE ETERNAL TRIAL</h3>
+                    <p>In a world where knowledge rivals strength, seven ancient kingdoms coexist under the watch of the Old Gods. Each kingdom must enter the Eternal Trial, a challenge merging intellect, combat, and strategic thinking.</p>
+                    <p><strong>Core Identity:</strong> Quiz Strategy, Fantasy Combat, Last-Survivor Arena.</p>
+                </div>
+                
+                <div class="rule-section">
+                    <h3 class="section-heading">1. OBJECTIVE & WINNING CONDITIONS</h3>
+                    <ul>
+                        <li>Each team starts with **20 HP**.</li>
+                        <li>Objective: Use knowledge (answering questions) and combat skills to defeat other teams.</li>
+                        <li>The last team standing (HP > 0) wins.</li>
+                    </ul>
+                </div>
+
+                <div class="rule-section">
+                    <h3 class="section-heading">🛡️ TEAM SKILLS SUMMARY</h3>
+                    <p>Each team possesses 1 Passive Skill and 1 Ultimate Skill.</p>
+                    <details>
+                        <summary>Specific Skill Details (Expand)</summary>
+                        <ul>
+                            <li>**1. Viking Kingdom:** Passive (Personal Care Q correct → +1 extra damage).</li>
+                            <li>**2. Dragon Temple Knights:** Passive (Service Q correct → +2 HP).</li>
+                            <li>**3. Samurai Clan:** Passive (May request re-read once per turn).</li>
+                            <li>**4. Spartan Feast Legion:** Passive (Food Q correct → +1 damage buff).</li>
+                            <li>**5. Amazon Forest Tribe:** Passive (Q on "nutritious"/"organic" → immunity for 1 turn).</li>
+                            <li>**6. Pharaoh Dynasty:** Passive (Flip coin to block damage when attacked).</li>
+                            <li>**7. Elf Light Kingdom:** Ultimate (Restore 4 HP and force one team to skip their turn).</li>
+                        </ul>
+                    </details>
+                </div>
+            </div>
+            
+            <hr class="divider">
+
+            <h2 class="screen-title">SELECT YOUR RACE</h2>
+            <div id="race-grid" class="race-grid">
+                </div>
+            <p id="race-info" class="description race-info"></p>
+        </div>
+
+        <div id="quiz-screen" class="screen hidden">
+            <div id="battle-arena" class="battle-arena">
+                </div>
+            
+            <div class="header">
+                <div id="turn-display" class="info-box">TURN: ...</div>
+                <div id="round-display" class="info-box">Round: 1</div>
+            </div>
+
+            <div class="quiz-box">
+                <div class="question-frame">
+                    <h2 id="question-text">Quiz Questions</h2>
+                    <div id="effect-result" class="effect-result hidden"></div>
+                </div>
+                
+                <div id="answer-buttons" class="button-grid"></div>
+                
+                <button id="next-btn" class="next-btn" disabled>CONTINUE</button>
+            </div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <h1 id="game-over-title" class="screen-title">GAME OVER</h1>
+            <p id="winner-display" class="description"></p>
+            <button id="restart-btn" class="next-btn">START NEW TRIAL</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+<audio id="background-music" loop>
+    <source src="assets/audio/Fantasy Adventure Music - Dragonfly.mp3" type="audio/mp3">
+    </audio>
+
+<audio id="sfx-correct">
+    <source src="assets/audio/sfx_hit_success.mp3" type="audio/mp3">
+</audio>
+
+<audio id="sfx-incorrect">
+    <source src="assets/audio/sfx_recoil_damage.mp3" type="audio/mp3">
+</audio>
+
+<audio id="sfx-click">
+    <source src="assets/audio/sfx_ui_click.mp3" type="audio/mp3">
+</audio>
+
+<audio id="champion-music">
+    <source src="assets/audio/champion_fanfare.mp3" type="audio/mp3">
+</audio>
+</html>

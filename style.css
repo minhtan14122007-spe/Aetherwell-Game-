@@ -1,0 +1,893 @@
+/* --- VARIABLES AND BASE (ULTIMATE NEON STYLE) --- */
+:root {
+    --bg-color: #010408; /* Nền tối, gần như đen */
+    --main-box-color: #0b1118; /* Nền box sẫm */
+    --text-color: #f0f4f8; /* Màu chữ sáng */
+    --accent-color: #00eaff; /* Màu Neon Xanh chính */
+    --secondary-accent: #ff00c8; /* Màu Neon Hồng phụ */
+    --border-glow: rgba(0, 234, 255, 0.8); /* Glow Xanh */
+    --correct-color: #00ff88; /* Màu xanh lá (Correct) */
+    --incorrect-color: #ff3366; /* Màu đỏ (Incorrect) */
+    --mana-color: #00eaff; 
+    --status-color: #ffee00; /* Màu vàng (Status) */
+    --hp-color: #ff3333; /* Màu đỏ (HP) */
+    --race-color: var(--accent-color); /* Màu Tộc động */
+    
+    --font-title: 'Orbitron', sans-serif; /* Dùng cho tiêu đề lớn */
+    --font-body: 'Inter', 'Montserrat', sans-serif; /* Dùng cho nội dung chính */
+}
+
+/* --- GLOBAL RESET AND BASE STYLES --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    font-size: 16px; 
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden; 
+    
+    /* ÁP DỤNG HÌNH NỀN CHO TOÀN BỘ BODY */
+    background-image: url('https://images-cdn.fantasyflightgames.com/filer_public/5f/92/5f92bc2c-9ed9-434b-befa-7093b5fb6204/bw01_preview.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; 
+    
+    /* Làm tối hình nền để UI dễ đọc hơn */
+    filter: brightness(0.7); 
+}
+
+.hidden { display: none !important; }
+
+.game-container {
+    width: 95%;
+    max-width: 1200px;
+    background-color: rgba(11, 17, 24, 0.9); 
+    backdrop-filter: blur(2px); 
+    
+    padding: 30px;
+    border: 1px solid var(--accent-color);
+    box-shadow: 0 0 25px var(--border-glow), inset 0 0 15px rgba(0, 234, 255, 0.2); 
+    border-radius: 6px;
+    position: relative;
+    z-index: 1; 
+    transition: all 0.1s ease-out; 
+    transform: translate3d(0, 0, 0); 
+}
+
+/* --- SCREEN SHAKE EFFECTS --- */
+@keyframes shake-intense {
+    0% { transform: translate(0px, 0px) rotate(0deg); }
+    10% { transform: translate(-5px, 0px) rotate(-1deg); }
+    20% { transform: translate(5px, 0px) rotate(1deg); }
+    30% { transform: translate(-3px, 0px) rotate(-1deg); }
+    40% { transform: translate(3px, 0px) rotate(1deg); }
+    50% { transform: translate(-1px, 0px) rotate(0deg); }
+    60% { transform: translate(1px, 0px) rotate(0deg); }
+    70% { transform: translate(-1px, 0px) rotate(0deg); }
+    100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+
+@keyframes shake-heavy {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-8px, 0); }
+    75% { transform: translate(8px, 0); }
+}
+
+@keyframes shake-subtle {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(1px, 1px); }
+    50% { transform: translate(-1px, -1px); }
+    75% { transform: translate(1px, 1px); }
+}
+
+.game-container.shake-intense { animation: shake-intense 0.3s ease-out both; }
+.game-container.shake-heavy { animation: shake-heavy 0.25s ease-in-out both; }
+.game-container.shake-subtle { animation: shake-subtle 0.4s ease-out both; }
+
+
+/* --- QUIZ FEEDBACK EFFECTS (Ăn mừng/Lắc) --- */
+@keyframes quiz-celebrate {
+    0% { transform: scale(1); border-color: var(--accent-color); box-shadow: 0 0 40px var(--border-glow); }
+    50% { 
+        transform: scale(1.015) rotate(-0.5deg); 
+        border-color: var(--correct-color); 
+        box-shadow: 0 0 60px var(--correct-color), inset 0 0 20px var(--correct-color); 
+    }
+    100% { transform: scale(1); border-color: var(--accent-color); box-shadow: 0 0 40px var(--border-glow); }
+}
+
+@keyframes quiz-wiggle {
+    0%, 100% { transform: translateX(0); border-color: var(--accent-color); box-shadow: 0 0 40px var(--border-glow); }
+    20%, 60% { transform: translateX(-10px); border-color: var(--incorrect-color); box-shadow: 0 0 40px var(--incorrect-color); } 
+    40%, 80% { transform: translateX(10px); border-color: var(--incorrect-color); box-shadow: 0 0 40px var(--incorrect-color); }
+}
+
+.quiz-box.celebrate { animation: quiz-celebrate 0.5s ease-out; }
+.quiz-box.wiggle { animation: quiz-wiggle 0.3s ease-in-out; }
+
+
+/* --- FLYING TEXT ANIMATION (Văn bản thuộc tính bay lên) --- */
+@keyframes flyUpAndFade {
+    0% {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50px); /* Bay lên 50px */
+        opacity: 0;
+    }
+}
+
+.flying-text {
+    position: absolute;
+    top: 50%; /* Xuất hiện ở giữa thanh HP/Mana */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-title);
+    font-size: 1.4em; /* Kích thước lớn */
+    font-weight: 900;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+    animation: flyUpAndFade 1.2s ease-out forwards; 
+}
+.flying-text.hp-dealt { 
+    color: var(--hp-color); 
+    text-shadow: 0 0 10px var(--hp-color);
+}
+.flying-text.hp-healed { 
+    color: var(--correct-color); 
+    text-shadow: 0 0 10px var(--correct-color);
+}
+.flying-text.mana-gain { 
+    color: var(--mana-color); 
+    text-shadow: 0 0 10px var(--mana-color);
+}
+.flying-text.mana-loss { 
+    color: var(--incorrect-color); 
+    text-shadow: 0 0 10px var(--incorrect-color);
+}
+
+
+/* --- BLOOD SPLATTER EFFECT --- */
+#blood-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: transparent;
+    pointer-events: none; 
+    z-index: 9999; 
+    opacity: 0;
+    transition: opacity 1s ease-out;
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0) 50%, rgba(255, 0, 0, 0.05) 70%, rgba(150, 0, 0, 0.5) 100%);
+    background-size: cover;
+    background-position: center;
+}
+
+#blood-overlay.blood-level-1 { opacity: 0.1; }
+#blood-overlay.blood-level-2 { opacity: 0.25; }
+#blood-overlay.blood-level-3 { opacity: 0.45; }
+#blood-overlay.blood-level-4 { opacity: 0.65; }
+
+/* --- HEADER AND NAVIGATION --- */
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 2px solid var(--accent-color);
+    margin-bottom: 20px;
+}
+
+#game-title {
+    font-family: var(--font-title);
+    font-size: 2.5em;
+    color: var(--secondary-accent);
+    text-shadow: 0 0 15px var(--secondary-accent);
+    letter-spacing: 2px;
+}
+
+#turn-display, #round-display {
+    font-family: var(--font-title);
+    font-size: 1.3em;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* --- RACE SELECTION SCREEN --- */
+#race-selection {
+    text-align: center;
+}
+
+#race-select-title {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: var(--accent-color);
+    text-shadow: 0 0 8px var(--border-glow);
+}
+
+#race-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.race-btn {
+    position: relative;
+    padding: 15px;
+    background-color: var(--main-box-color);
+    border: 2px solid var(--race-color);
+    border-radius: 6px;
+    transition: all 0.3s;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.race-btn:hover:not(.disabled) {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 0 20px var(--race-color);
+    background-color: rgba(15, 25, 35, 0.9);
+}
+
+.race-btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.race-btn-image-container {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+    background-size: cover;
+    background-position: center;
+    border: 5px solid var(--race-color); 
+    box-shadow: 0 0 10px var(--race-color);
+}
+
+.race-btn-name {
+    font-family: var(--font-title);
+    font-weight: bold;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    display: block;
+}
+
+.chosen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    border-radius: 6px;
+}
+
+#race-info {
+    color: var(--text-color);
+    font-style: italic;
+    margin-top: 15px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+    padding-top: 15px;
+}
+
+
+/* --- BATTLE ARENA (HP BARS) --- */
+#battle-arena {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+}
+
+.player-hp-container {
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    transition: all 0.3s ease-out;
+    position: relative;
+    overflow: hidden; 
+}
+
+.player-hp-container.current-turn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--race-color);
+    box-shadow: 0 0 15px var(--race-color);
+}
+
+.player-hp-container.eliminated {
+    opacity: 0.3;
+    filter: grayscale(100%);
+}
+
+.player-portrait {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    float: left;
+    margin-right: 10px;
+    border: 2px solid var(--race-color);
+}
+
+.player-name-hp {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.player-title {
+    font-family: var(--font-title);
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.hp-bar-outer, .mana-bar-outer {
+    width: 100%;
+    height: 15px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    margin-top: 5px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+}
+
+.hp-bar-inner {
+    height: 100%;
+    background-color: var(--hp-color);
+    transition: width 0.5s ease-out;
+}
+
+.mana-bar-inner {
+    height: 100%;
+    background-color: var(--mana-color);
+    transition: width 0.5s ease-out;
+}
+
+.hp-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7em;
+    color: var(--text-color);
+    font-weight: bold;
+    line-height: 15px;
+    text-shadow: 0 0 2px #000;
+}
+
+.score-display {
+    display: block;
+    font-size: 0.8em;
+    color: var(--status-color);
+    margin-top: 5px;
+}
+
+.status-effect {
+    display: block;
+    font-size: 0.7em;
+    color: var(--status-color);
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-top: 3px;
+    border: 1px dashed rgba(255, 255, 0, 0.3);
+    padding: 2px;
+    border-radius: 2px;
+}
+
+/* --- QUIZ SCREEN --- */
+.quiz-box {
+    background-color: var(--main-box-color);
+    padding: 25px;
+    border-radius: 8px;
+    border: 3px solid var(--accent-color);
+    box-shadow: 0 0 40px var(--border-glow);
+    transition: all 0.3s;
+}
+
+.skill-card-header {
+    font-family: var(--font-title);
+    padding: 10px;
+    margin: -25px -25px 20px -25px;
+    text-align: center;
+    border-bottom: 2px solid var(--accent-color);
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    text-shadow: 0 0 5px #000;
+}
+
+.question-body {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.answer-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.answer-btn {
+    font-family: var(--font-body);
+    font-size: 1.1em;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    white-space: normal;
+}
+
+.answer-btn:hover:not(:disabled) {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--race-color);
+}
+
+.answer-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.answer-btn.correct {
+    background-color: var(--correct-color);
+    color: #000;
+    border-color: var(--correct-color);
+    box-shadow: 0 0 15px var(--correct-color);
+    font-weight: bold;
+}
+
+.answer-btn.incorrect {
+    background-color: var(--incorrect-color);
+    color: #fff;
+    border-color: var(--incorrect-color);
+    box-shadow: 0 0 15px var(--incorrect-color);
+    font-weight: bold;
+}
+
+/* --- ULTIMATE BUTTON STYLE --- */
+.ultimate-skill-container {
+    width: 100%;
+    text-align: center;
+    margin: 15px 0 20px 0;
+}
+
+.ultimate-btn {
+    font-family: var(--font-title);
+    font-size: 1.1em;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: #FF00FF; /* Màu Ultimate */
+    border: 2px solid var(--race-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-shadow: 0 0 10px #FF00FF;
+    box-shadow: 0 0 20px var(--race-color), inset 0 0 10px #FF00FF;
+}
+
+.ultimate-btn:hover:not(:disabled) {
+    background-color: rgba(255, 0, 255, 0.1);
+    transform: scale(1.03);
+}
+
+.ultimate-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: var(--text-color);
+    text-shadow: none;
+}
+
+.ultimate-btn.disabled-lock {
+     border-color: var(--incorrect-color) !important;
+     color: var(--incorrect-color) !important;
+     text-shadow: 0 0 10px var(--incorrect-color);
+}
+
+/* --- RESULT BOX & NEXT BUTTON --- */
+.result-box {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--race-color);
+    box-shadow: 0 0 10px var(--race-color);
+}
+
+.result-box p {
+    margin: 5px 0;
+}
+
+.correct-effect {
+    font-family: var(--font-title);
+    color: var(--correct-color);
+    font-size: 1.1em;
+    text-shadow: 0 0 5px var(--correct-color);
+}
+
+.incorrect-effect {
+    font-family: var(--font-title);
+    color: var(--incorrect-color);
+    font-size: 1.1em;
+    text-shadow: 0 0 5px var(--incorrect-color);
+}
+
+.effect-details {
+    font-size: 1em;
+    line-height: 1.4;
+}
+
+.next-btn {
+    display: block;
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    font-family: var(--font-title);
+    font-size: 1.5em;
+    background-color: var(--secondary-accent);
+    color: var(--text-color);
+    border: 2px solid var(--secondary-accent);
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 0 25px var(--secondary-accent);
+    transition: all 0.2s;
+}
+
+.next-btn:hover:not(:disabled) {
+    transform: scale(1.01);
+    background-color: #ff33e9;
+}
+
+.next-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- GAME OVER SCREEN --- */
+#game-over-screen {
+    text-align: center;
+    padding: 50px;
+}
+
+#winner-display {
+    font-family: var(--font-title);
+    font-size: 3em;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px var(--accent-color);
+}
+
+#restart-btn {
+    font-size: 1.2em;
+    padding: 15px 30px;
+}
+/* --- CSS TỐI ƯU CHO NÚT ULTIMATE SKILL (Cần thêm/thay thế vào file CSS) --- */
+
+.ultimate-skill-container {
+    margin: 15px auto;
+    text-align: center;
+    max-width: 600px;
+}
+
+.ultimate-btn {
+    /* Thiết lập font và kích thước cơ bản */
+    font-family: 'Montserrat', sans-serif; /* Giữ font mạnh mẽ, dễ đọc */
+    font-size: 16px;
+    font-weight: 700; 
+    color: #FFFFFF; /* Màu chữ chính: TRẮNG TINH KHIẾT (Cực kỳ rõ ràng) */
+    
+    /* Thiết kế nút */
+    padding: 12px 25px;
+    border: 3px solid #FFFFFF; /* Đổi viền sang màu Trắng để nổi bật hơn */
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    
+    /* Màu nền - Vẫn giữ màu Tộc */
+    background: var(--race-color); 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7); 
+    
+    /* Căn chỉnh nội dung */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ultimate-btn:not(.disabled-lock):hover {
+    transform: translateY(-3px) scale(1.02);
+    /* Khi hover, đổi màu nền sang màu tối và viền/chữ sang màu Tộc */
+    background: #1a1a2e; 
+    color: var(--race-color); 
+    border-color: var(--race-color); 
+    box-shadow: 0 8px 25px var(--race-color); 
+}
+
+/* Biểu tượng Skull */
+.ultimate-btn i.fa-skull-crossbones {
+    font-size: 18px; 
+    margin-right: 10px;
+    color: #00FFFF; /* Màu Cyan Rực Rỡ */
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.8); /* Bóng đổ cho hiệu ứng phát sáng */
+}
+
+/* Chi phí MANA - Phần quan trọng nhất, cần nổi bật */
+.ultimate-btn .mana-cost {
+    /* Đảm bảo độ tương phản cao */
+    color: #111111; /* Màu chữ gần như Đen */
+    background-color: #FFEA00; /* Nền Vàng Chanh Sáng */
+    padding: 2px 8px;
+    border-radius: 5px;
+    margin-right: 15px;
+    font-size: 0.9em;
+    font-weight: 900;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+}
+
+/* Phần Mô Tả Hiệu Ứng (Ult Effect Text) */
+.ultimate-btn .ult-effect-text {
+    font-size: 13px; 
+    font-weight: 500; /* Giảm độ đậm một chút */
+    margin-left: 15px;
+    padding-left: 15px;
+    border-left: 1px solid #FFFFFF; /* Vạch ngăn trắng */
+    color: #BBBBBB; /* Màu xám sáng nhẹ nhàng hơn */
+    font-style: italic;
+}
+
+/* Trạng thái BỊ KHÓA (Disabled/Not Enough Mana) */
+.ultimate-btn.disabled-lock {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #333; 
+    border-color: #555;
+    color: #BBB;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- ĐỂ ĐẢM BẢO HIỆU ỨNG KẾT QUẢ CŨNG RÕ HƠN --- */
+#effect-result {
+    font-family: 'Georgia', serif;
+    /* Dùng màu Tộc cho viền và bóng đổ */
+    border: 2px solid var(--race-color);
+    box-shadow: 0 0 18px var(--race-color); 
+    background-color: #0d1a26; /* Nền tối hơn cho hộp kết quả */
+    color: #FFFFFF; /* Chữ trắng cho kết quả */
+}
+/* =================================================== */
+/* 2.1. CÁC ĐỊNH DẠNG HIGHLIGHT CHO TRẠNG THÁI HP/MANA/SCORE */
+/* =================================================== */
+
+/* Định dạng chung cho các chỉ số quan trọng (HP/MANA) */
+.highlight-text {
+    font-size: 1.1em; /* Lớn hơn một chút */
+    font-weight: bold;
+    color: #FFEA00; /* Màu vàng sáng để highlight */
+    text-shadow: 0 0 5px rgba(255, 234, 0, 0.7); /* Hiệu ứng phát sáng nhẹ */
+}
+
+/* Định dạng riêng cho Điểm số (Score) */
+.score-highlight {
+    font-size: 1.2em; 
+    font-weight: 900;
+    color: #00FFFF; /* Màu Cyan rực rỡ */
+    text-shadow: 0 0 7px rgba(0, 255, 255, 0.8);
+    margin-left: 5px;
+}
+
+/* Định dạng cho Câu hỏi */
+.question-highlight {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #FFFFFF; /* Đảm bảo chữ trắng */
+    /* Thêm padding/margin để câu hỏi không bị dính vào viền */
+    padding: 10px 0;
+}
+
+/* =================================================== */
+/* 2.2. ĐỊNH DẠNG KHOẢNG CÁCH CHO CÁC NÚT CÂU TRẢ LỜI */
+/* =================================================== */
+
+#answer-buttons {
+    display: grid; /* Sử dụng grid để dễ dàng căn chỉnh cột */
+    grid-template-columns: 1fr 1fr; /* Chia thành 2 cột */
+    gap: 15px; /* Khoảng cách giữa các nút */
+    margin-top: 20px;
+}
+
+.answer-btn-spaced {
+    /* Đảm bảo nút rộng hơn và có padding */
+    width: 100%;
+    padding: 15px 10px;
+    font-size: 1.1em;
+    font-family: 'Arial', sans-serif;
+    text-align: left; /* Căn lề trái cho dễ đọc */
+    transition: all 0.2s;
+    
+    /* Cải thiện viền và bóng đổ */
+    border: 2px solid var(--race-color);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.answer-btn-spaced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--race-color);
+}
+
+/* Số thứ tự của câu trả lời */
+.answer-index {
+    font-weight: 900;
+    color: #FF00FF; /* Màu Deep Magenta cho số thứ tự */
+    margin-right: 10px;
+}
+/* =================================================== */
+/* CẬP NHẬT BỐ CỤC BATTLE ARENA */
+/* =================================================== */
+
+#battle-arena {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* Đảm bảo chiều cao đủ lớn cho 2 thanh HP lớn */
+    min-height: 250px; 
+    margin-bottom: 20px;
+    padding: 10px;
+    position: relative;
+    border-radius: 10px;
+}
+
+/* Chế độ Focus: Dùng cho Current Player VÀ Target Player */
+#battle-arena.focus-mode {
+    justify-content: space-evenly;
+}
+
+/* Chế độ Mặc định: Dùng cho Current Player VÀ Other Players nhỏ */
+#battle-arena.default-mode {
+    justify-content: center;
+    gap: 15px;
+}
+
+
+/* =================================================== */
+/* ĐỊNH DẠNG PLAYER HP CONTAINER (CHUNG) */
+/* =================================================== */
+
+.player-hp-container {
+    width: 220px; /* Kích thước tiêu chuẩn */
+    min-height: 180px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #333;
+    background-color: rgba(13, 26, 38, 0.8);
+    position: relative;
+    transition: all 0.5s ease-in-out;
+}
+
+/* Kích thước lớn cho đội đang chơi (MAIN-FOCUS) */
+.player-hp-container.main-focus {
+    width: 250px;
+    min-height: 220px;
+    border-color: var(--race-color);
+    box-shadow: 0 0 15px var(--race-color);
+    order: -1; /* Luôn đặt người chơi hiện tại ở bên trái */
+}
+
+/* Kích thước lớn cho đội bị ảnh hưởng (TARGET-FOCUS) */
+.player-hp-container.target-focus {
+    width: 250px;
+    min-height: 220px;
+    border-color: #FF00FF; /* Màu highlight đối thủ */
+    box-shadow: 0 0 15px #FF00FF;
+}
+
+/* Kích thước NHỎ cho các đội khác trong chế độ mặc định */
+.player-hp-container.small-display {
+    width: 100px;
+    min-height: 120px;
+    padding: 5px;
+    opacity: 0.6;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+}
+
+/* Ẩn các chi tiết cho chế độ nhỏ */
+.player-hp-container.small-display .hp-bar-outer,
+.player-hp-container.small-display .mana-bar-outer,
+.player-hp-container.small-display .score-display {
+    display: none;
+}
+
+.player-hp-container.small-display .player-portrait {
+    height: 60px;
+    width: 60px;
+    margin: 5px auto;
+}
+
+.player-hp-container.small-display .player-title {
+    font-size: 0.8em;
+    text-align: center;
+    display: block;
+}
+/* =================================================== */
+/* ANIMATIONS CHO HIỆU ỨNG CHIẾN ĐẤU */
+/* =================================================== */
+
+/* 1. ĐỘI TẤN CÔNG: Đẩy Tới (Thrust) */
+@keyframes attacker-thrust {
+    0%, 100% { 
+        transform: translate(0, 0) scale(1.0); 
+        box-shadow: 0 0 15px var(--race-color);
+    }
+    50% { 
+        transform: translate(15px, 0) scale(1.03); /* Đẩy mạnh về phía trước */
+        box-shadow: 0 0 25px var(--race-color);
+    }
+}
+
+.attacker-thrust {
+    animation: attacker-thrust 0.3s ease-out;
+}
+
+/* 2. ĐỘI BỊ ĐÁNH: Văng Ra/Hất Lùi (Knockback) */
+@keyframes target-knockback {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    30% { transform: translate(-30px, -5px) rotate(-1deg); } /* Bị hất lùi và nảy lên */
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.target-knockback {
+    animation: target-knockback 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Hiệu ứng nhẹ nhàng hơn */
+}
+
+/* 3. ĐỘI BỊ DỘI NGƯỢC/BUFF TỰ THÂN: Rung Lắc Ngắn (Recoil) */
+@keyframes target-recoil {
+    0%, 100% { 
+        transform: translate(0, 0); 
+        box-shadow: 0 0 15px var(--race-color);
+    }
+    25% { 
+        transform: translate(0, -5px); /* Nảy nhẹ lên */
+    }
+    50% {
+        box-shadow: 0 0 20px #FF00FF; /* Màu đỏ/magenta nhấp nháy */
+    }
+}
+
+.target-recoil {
+    animation: target-recoil 0.35s ease-in-out;
+}
